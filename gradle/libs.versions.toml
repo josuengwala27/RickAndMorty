@@ -19,6 +19,7 @@ runtimeLivedata = "1.7.4"
 ui = "1.7.4"
 androidxLifecycle = "2.4.0"
 uiToolingPreviewVersion = "1.7.4"
+foundationAndroid = "1.7.0"
 
 [libraries]
 androidx-compose-bom-v20230800 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
@@ -56,6 +57,7 @@ ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

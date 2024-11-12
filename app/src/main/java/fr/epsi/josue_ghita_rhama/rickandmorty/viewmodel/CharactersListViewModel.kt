@@ -22,20 +22,33 @@ class CharactersListViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
+    private var currentPage = 1
+    private var isLoading = false
+    private var isLastPage = false
 
     init {
         fetchCharacters()
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    private fun fetchCharacters() {
+    private fun fetchCharacters(page: Int = currentPage) {
+        if (isLoading || isLastPage) return
+
+        isLoading = true
         viewModelScope.launch {
             try {
                 val service = RickAndMortyApiService.create()
-                val response = service.getCharacters(1)
+                val response = service.getCharacters(page)
                 Log.d("API Response", "Personnages récupérés : ${response.results}")
-                _characters.value = response.results
+
+                _characters.value = _characters.value + response.results
                 _errorMessage.value = null
+
+                if (response.info.next == null) {
+                    isLastPage = true
+                } else {
+                    currentPage++
+                }
             } catch (e: HttpException) {
                 Log.e("API Error", "Erreur HTTP", e)
                 _errorMessage.value = "Erreur lors de la récupération des personnages : ${e.message}"
@@ -45,7 +58,13 @@ class CharactersListViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("API Error", "Erreur inconnue : ${e.message}", e)
                 _errorMessage.value = "Erreur inconnue : ${e.message}"
+            } finally {
+                isLoading = false
             }
         }
+    }
+
+    fun loadNextPage() {
+        fetchCharacters()
     }
 }

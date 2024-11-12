@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -33,6 +34,10 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+private val DarkGreen = Color(0xFF1B5E20)
+private val LightGreen = Color(0xFF66BB6A)
+private val DeepPurple = Color(0xFF512DA8)
+
 @Composable
 fun RickAndMortyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -50,8 +55,19 @@ fun RickAndMortyTheme(
         else -> LightColorScheme
     }
 
+    val colors = lightColorScheme(
+        primary = DarkGreen,
+        secondary = LightGreen,
+        background = Color(0xFFF5F5F5),
+        surface = Color.White,
+        onPrimary = Color.White,
+        onSecondary = Color.Black,
+        onBackground = Color.Black,
+        onSurface = Color.Black
+    )
+
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = colors,
         typography = Typography,
         content = content
     )

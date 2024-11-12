@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 
@@ -24,13 +25,13 @@ class CharacterDetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val name = intent.getStringExtra("name") ?: "Unknown"
-            val status = intent.getStringExtra("status") ?: "Unknown"
-            val species = intent.getStringExtra("species") ?: "Unknown"
-            val type = intent.getStringExtra("type") ?: "Unknown"
-            val gender = intent.getStringExtra("gender") ?: "Unknown"
-            val origin = intent.getStringExtra("origin") ?: "Unknown"
-            val location = intent.getStringExtra("location") ?: "Unknown"
+            val name = intent.getStringExtra("name") ?: " "
+            val status = intent.getStringExtra("status") ?: " "
+            val species = intent.getStringExtra("species") ?: " "
+            val type = intent.getStringExtra("type") ?: " "
+            val gender = intent.getStringExtra("gender") ?: " "
+            val origin = intent.getStringExtra("origin") ?: " "
+            val location = intent.getStringExtra("location") ?: ""
             val imageUrl = intent.getStringExtra("imageUrl") ?: ""
 
             CharacterDetailsScreen(
@@ -41,7 +42,8 @@ class CharacterDetailsActivity : ComponentActivity() {
                 gender = gender,
                 origin = origin,
                 location = location,
-                imageUrl = imageUrl
+                imageUrl = imageUrl,
+                onBackPressed = { finish() }
             )
         }
     }
@@ -57,20 +59,19 @@ fun CharacterDetailsScreen(
     gender: String,
     origin: String,
     location: String,
-    imageUrl: String
+    imageUrl: String,
+    onBackPressed: () -> Unit
 ) {
-    val context = LocalContext.current
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = name) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF6200EE),
+                    containerColor = Color(0xFF1B5E20),
                     titleContentColor = Color.White
                 ),
                 navigationIcon = {
-                    IconButton(onClick = { (context as? ComponentActivity)?.finish() }) {
+                    IconButton(onClick = onBackPressed) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 }
@@ -84,21 +85,52 @@ fun CharacterDetailsScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(imageUrl),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+
+            Box(
                 modifier = Modifier
-                    .size(128.dp)
-                    .clip(CircleShape)
-            )
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(imageUrl),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(128.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.LightGray, CircleShape)
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Status: $status", style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Species: $species", style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Type: $type", style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Gender: $gender", style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Origin: $origin", style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Location: $location", style = MaterialTheme.typography.bodyLarge)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFE8F5E9), shape = RoundedCornerShape(8.dp))
+                    .padding(16.dp)
+            ) {
+                CharacterInfoRow(label = "Status", value = status)
+                CharacterInfoRow(label = "Species", value = species)
+                CharacterInfoRow(label = "Type", value = type.ifBlank { " " })
+                CharacterInfoRow(label = "Gender", value = gender)
+                CharacterInfoRow(label = "Origin", value = origin)
+                CharacterInfoRow(label = "Location", value = location)
+            }
         }
+    }
+}
+
+@Composable
+fun CharacterInfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Text(text = "$label:", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = value, style = MaterialTheme.typography.bodyLarge)
     }
 }
